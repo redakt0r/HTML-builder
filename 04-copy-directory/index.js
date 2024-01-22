@@ -1,33 +1,28 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
-
-process.on('uncaughtException', (err) => {
-  console.error(`There was an uncaught error: ${err}`);
-  process.exit(1);
-});
+const handleError = require('../01-read-file/index');
 
 const existFolderPath = path.join(__dirname, 'files');
 const newFolderPath = `${existFolderPath}-copy`;
 
-function copyDirectory(from, to) {
-  fs.mkdir(to, { recursive: true }, (err) => {
-    if (err) throw err;
-    else {
-      fs.readdir(from, (err, files) => {
-        if (err) throw err;
-        else {
-          files.forEach((fileName) => {
-            const filePathFrom = path.join(from, fileName);
-            const filePathTo = path.join(to, fileName);
-            fs.copyFile(filePathFrom, filePathTo, (err) => {
-              if (err) throw err;
-            });
-          });
-          console.log('Folder successfully copied!');
-        }
-      });
+async function copyDirectory(from, to) {
+  try {
+    await fs.mkdir(to, { recursive: true });
+    const files = await fs.readdir(from);
+    for (const file of files) {
+      const filePathFrom = path.join(from, file);
+      const filePathTo = path.join(to, file);
+      await fs.copyFile(filePathFrom, filePathTo);
     }
-  });
+    console.log('Folder successfully copied!');
+  } catch (err) {
+    handleError(err);
+  }
 }
 
-copyDirectory(existFolderPath, newFolderPath);
+// run only if direct execution
+if (require.main === module) {
+  copyDirectory(existFolderPath, newFolderPath);
+}
+
+module.exports = copyDirectory;
