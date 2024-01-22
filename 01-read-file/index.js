@@ -1,12 +1,24 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
-fs.readFile(path.join(__dirname, 'text.txt'), 'utf8', (err, data) => {
-  if (err) throw err;
-  console.log(data);
-});
+function handleError(error) {
+  console.error(`Error: ${error.message}`);
+}
 
-process.on('uncaughtException', (err) => {
-  console.error(`There was an uncaught error: ${err}`);
-  process.exit(1);
-});
+const filePath = path.join(__dirname, 'text.txt');
+
+async function readSomeFile(path) {
+  try {
+    const data = await fs.readFile(path, 'utf8');
+    console.log(data);
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+// run only if direct execution
+if (require.main === module) {
+  readSomeFile(filePath);
+}
+
+module.exports = { handleError };
