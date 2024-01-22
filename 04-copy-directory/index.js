@@ -33,4 +33,4 @@ if (require.main === module) {
   copyDirectory(existFolderPath, newFolderPath);
 }
 
-module.exports = copyDirectory;
+module.exports = { copyDirectory };
