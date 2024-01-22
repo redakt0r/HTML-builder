@@ -1,31 +1,41 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
+const { handleError } = require('../01-read-file/index');
 
-process.on('uncaughtException', (err) => {
-  console.error(`There was an uncaught error: ${err}`);
-  process.exit(1);
-});
+// looks like this creepy table require additional memory usage bcs it needs to be stored before printing, but who cares?
 
-fs.readdir(
-  path.join(__dirname, 'secret-folder'),
-  { withFileTypes: true },
-  (err, files) => {
-    if (err) throw err;
-    else {
-      files.forEach((file) => {
-        if (file.isFile()) {
-          const filePath = path.join(__dirname, 'secret-folder', file.name);
-          const fileName = file.name.split('.')[0];
-          const fileExtension = file.name.split('.')[1];
-          fs.stat(filePath, (err, data) => {
-            if (err) throw err;
-            else
-              process.stdout.write(
-                `${fileName} - ${fileExtension} - ${data.size}\n`,
-              );
-          });
-        }
-      });
+function createTable(data) {
+  const maxLength = Math.max(...data.map((str) => str.length));
+  let table = '-'.repeat(maxLength + 4) + '\n';
+  data.forEach((str) => {
+    const padding = ' '.repeat(maxLength - str.length);
+    table += `| ${str.trim()}${padding}  |\n`;
+  });
+  table += '-'.repeat(maxLength + 4);
+  return table;
+}
+
+const folderPath = path.join(__dirname, 'secret-folder');
+
+async function displayFilesData(exactPath) {
+  try {
+    const files = await fs.readdir(exactPath, { withFileTypes: true });
+    const filesData = [];
+    for (const file of files) {
+      if (file.isFile()) {
+        const filePath = path.join(exactPath, file.name);
+        const fileName = file.name.split('.')[0];
+        const fileExtension = file.name.split('.')[1];
+        const data = await fs.stat(filePath);
+        filesData.push(
+          `${fileName} - ${fileExtension} - ${data.size / 1000}kb\n`,
+        );
+      }
     }
-  },
-);
+    process.stdout.write(createTable(filesData));
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+displayFilesData(folderPath);
