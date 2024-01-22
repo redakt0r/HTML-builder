@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
 
 function handleError(error) {
@@ -9,8 +9,8 @@ const filePath = path.join(__dirname, 'text.txt');
 
 async function readSomeFile(path) {
   try {
-    const data = await fs.readFile(path, 'utf8');
-    console.log(data);
+    const readStream = fs.createReadStream(path, 'utf8');
+    readStream.on('data', (data) => console.log(data));
   } catch (err) {
     handleError(err);
   }

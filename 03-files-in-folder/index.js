@@ -24,12 +24,10 @@ async function displayFilesData(exactPath) {
     for (const file of files) {
       if (file.isFile()) {
         const filePath = path.join(exactPath, file.name);
-        const fileName = file.name.split('.')[0];
-        const fileExtension = file.name.split('.')[1];
+        const fileName = path.basename(filePath, path.extname(filePath));
+        const fileExtension = path.extname(filePath).slice(1);
         const data = await fs.stat(filePath);
-        filesData.push(
-          `${fileName} - ${fileExtension} - ${data.size / 1000}kb\n`,
-        );
+        filesData.push(`${fileName} - ${fileExtension} - ${data.size}\n`);
       }
     }
     process.stdout.write(createTable(filesData));

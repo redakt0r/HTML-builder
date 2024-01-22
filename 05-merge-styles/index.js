@@ -18,7 +18,7 @@ async function mergeStyles(from, to) {
       }
     }
     await fs.writeFile(to, styles.join('\n'));
-    console.log('Styles successfully merged!');
+    // console.log('Styles successfully merged!');
   } catch (err) {
     handleError(err);
   }

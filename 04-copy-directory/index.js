@@ -15,6 +15,7 @@ async function copyDirectory(from, to) {
       console.error(`No such directory '${from}'`);
       return;
     }
+    await fs.rm(to, { recursive: true, force: true });
     await fs.mkdir(to, { recursive: true });
     const files = await fs.readdir(from);
     for (const file of files) {
@@ -26,9 +27,8 @@ async function copyDirectory(from, to) {
       } else {
         await fs.copyFile(filePathFrom, filePathTo);
       }
-      // await fs.copyFile(filePathFrom, filePathTo);
     }
-    console.log('Folder successfully copied!');
+    // console.log('Folder successfully copied!');
   } catch (err) {
     handleError(err);
   }
