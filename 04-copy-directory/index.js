@@ -1,12 +1,20 @@
 const fs = require('fs').promises;
 const path = require('path');
-const handleError = require('../01-read-file/index');
+const { handleError } = require('../01-read-file/index');
 
 const existFolderPath = path.join(__dirname, 'files');
 const newFolderPath = `${existFolderPath}-copy`;
 
 async function copyDirectory(from, to) {
   try {
+    const isFromExists = await fs
+      .access(from)
+      .then(() => true)
+      .catch(() => false);
+    if (!isFromExists) {
+      console.error(`No such directory '${from}'`);
+      return;
+    }
     await fs.mkdir(to, { recursive: true });
     const files = await fs.readdir(from);
     for (const file of files) {
