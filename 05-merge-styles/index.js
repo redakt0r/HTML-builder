@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
-const handleError = require('../01-read-file/index');
+const { handleError } = require('../01-read-file/index');
 
 const stylesDirectoryPath = path.join(__dirname, 'styles');
 const distPath = path.join(__dirname, 'project-dist', 'bundle.css');
