@@ -20,7 +20,13 @@ async function copyDirectory(from, to) {
     for (const file of files) {
       const filePathFrom = path.join(from, file);
       const filePathTo = path.join(to, file);
-      await fs.copyFile(filePathFrom, filePathTo);
+      const isDirectory = (await fs.stat(filePathFrom)).isDirectory();
+      if (isDirectory) {
+        await copyDirectory(filePathFrom, filePathTo);
+      } else {
+        await fs.copyFile(filePathFrom, filePathTo);
+      }
+      // await fs.copyFile(filePathFrom, filePathTo);
     }
     console.log('Folder successfully copied!');
   } catch (err) {
