@@ -27,7 +27,7 @@ async function displayFilesData(exactPath) {
         const fileName = path.basename(filePath, path.extname(filePath));
         const fileExtension = path.extname(filePath).slice(1);
         const data = await fs.stat(filePath);
-        filesData.push(`${fileName} - ${fileExtension} - ${data.size}\n`);
+        filesData.push(`${fileName} - ${fileExtension} - ${data.size}b\n`);
       }
     }
     process.stdout.write(createTable(filesData));
